@@ -1,12 +1,22 @@
+```python
 import pandas as pd
 import matplotlib.pyplot as plt
+
+# ==========================================
+# WEATHER PATTERN ANALYSIS
+# ==========================================
 
 # Load dataset
 file_path = "india_weather_rainfall_small.csv"
 df = pd.read_csv(file_path)
 
-# Display basic information
-print("First 5 rows:")
+# ==========================================
+# 1. BASIC DATA INFORMATION
+# ==========================================
+
+print("========== WEATHER PATTERN ANALYSIS ==========")
+
+print("\nFirst 5 Rows:")
 print(df.head())
 
 print("\nDataset Shape:")
@@ -18,9 +28,14 @@ print(df.columns.tolist())
 print("\nMissing Values:")
 print(df.isnull().sum())
 
+# ==========================================
+# 2. DATA PREPROCESSING
+# ==========================================
+
 # Convert date column
 df["date_of_record"] = pd.to_datetime(
-    df["date_of_record"], errors="coerce"
+    df["date_of_record"],
+    errors="coerce"
 )
 
 # Convert numeric columns
@@ -34,45 +49,73 @@ numeric_columns = [
 ]
 
 for column in numeric_columns:
-    df[column] = pd.to_numeric(df[column], errors="coerce")
+    df[column] = pd.to_numeric(
+        df[column],
+        errors="coerce"
+    )
 
 # Remove rows without date or rainfall
-df = df.dropna(subset=["date_of_record", "rainfall"])
+df = df.dropna(
+    subset=["date_of_record", "rainfall"]
+)
 
-# Create year and month number
+# Create year and month
 df["year"] = df["date_of_record"].dt.year
 df["month_num"] = df["date_of_record"].dt.month
 
-# -------------------------------
-# 1. Rainfall Statistics
-# -------------------------------
+# ==========================================
+# 3. RAINFALL STATISTICS
+# ==========================================
 
-print("\nRainfall Statistics")
-print("Total recorded rainfall:", df["rainfall"].sum())
-print("Average rainfall:", df["rainfall"].mean())
-print("Maximum rainfall:", df["rainfall"].max())
-print("Minimum rainfall:", df["rainfall"].min())
+print("\n========== RAINFALL STATISTICS ==========")
 
-# -------------------------------
-# 2. Yearly Rainfall
-# -------------------------------
+print(
+    "Total Recorded Rainfall:",
+    df["rainfall"].sum()
+)
 
-yearly_rainfall = df.groupby("year")["rainfall"].sum()
+print(
+    "Average Rainfall:",
+    df["rainfall"].mean()
+)
 
-print("\nYearly Rainfall:")
+print(
+    "Maximum Rainfall:",
+    df["rainfall"].max()
+)
+
+print(
+    "Minimum Rainfall:",
+    df["rainfall"].min()
+)
+
+# ==========================================
+# 4. YEARLY RAINFALL ANALYSIS
+# ==========================================
+
+yearly_rainfall = (
+    df.groupby("year")["rainfall"]
+    .sum()
+)
+
+print("\n========== YEARLY RAINFALL ==========")
 print(yearly_rainfall)
 
 plt.figure(figsize=(10, 5))
-yearly_rainfall.plot(kind="bar")
+
+yearly_rainfall.plot(
+    kind="bar"
+)
+
 plt.title("Yearly Rainfall")
 plt.xlabel("Year")
 plt.ylabel("Total Rainfall")
 plt.tight_layout()
 plt.show()
 
-# -------------------------------
-# 3. Monthly Average Rainfall
-# -------------------------------
+# ==========================================
+# 5. MONTHLY AVERAGE RAINFALL
+# ==========================================
 
 monthly_rainfall = (
     df.groupby("month_num")["rainfall"]
@@ -81,26 +124,31 @@ monthly_rainfall = (
 )
 
 month_names = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    "Jan", "Feb", "Mar", "Apr",
+    "May", "Jun", "Jul", "Aug",
+    "Sep", "Oct", "Nov", "Dec"
 ]
 
 monthly_rainfall.index = month_names
 
-print("\nMonthly Average Rainfall:")
+print("\n========== MONTHLY AVERAGE RAINFALL ==========")
 print(monthly_rainfall)
 
 plt.figure(figsize=(10, 5))
-monthly_rainfall.plot(kind="bar")
+
+monthly_rainfall.plot(
+    kind="bar"
+)
+
 plt.title("Monthly Average Rainfall")
 plt.xlabel("Month")
 plt.ylabel("Average Rainfall")
 plt.tight_layout()
 plt.show()
 
-# -------------------------------
-# 4. State-wise Average Rainfall
-# -------------------------------
+# ==========================================
+# 6. STATE-WISE RAINFALL ANALYSIS
+# ==========================================
 
 state_rainfall = (
     df.groupby("state")["rainfall"]
@@ -109,79 +157,141 @@ state_rainfall = (
     .head(10)
 )
 
-print("\nTop 10 States by Average Rainfall:")
+print("\n========== TOP 10 STATES BY AVERAGE RAINFALL ==========")
 print(state_rainfall)
 
 plt.figure(figsize=(10, 5))
-state_rainfall.plot(kind="bar")
+
+state_rainfall.plot(
+    kind="bar"
+)
+
 plt.title("Top 10 States by Average Rainfall")
 plt.xlabel("State")
 plt.ylabel("Average Rainfall")
 plt.xticks(rotation=45)
+
 plt.tight_layout()
 plt.show()
 
-# -------------------------------
-# 5. Temperature Trend
-# -------------------------------
+# ==========================================
+# 7. TEMPERATURE TREND
+# ==========================================
 
-yearly_temperature = df.groupby("year")["avg_temp"].mean()
+yearly_temperature = (
+    df.groupby("year")["avg_temp"]
+    .mean()
+)
 
-print("\nAverage Temperature by Year:")
+print("\n========== AVERAGE TEMPERATURE BY YEAR ==========")
 print(yearly_temperature)
 
 plt.figure(figsize=(10, 5))
-yearly_temperature.plot(kind="line", marker="o")
+
+yearly_temperature.plot(
+    kind="line",
+    marker="o"
+)
+
 plt.title("Average Temperature Trend")
 plt.xlabel("Year")
 plt.ylabel("Average Temperature")
+
 plt.tight_layout()
 plt.show()
 
-# -------------------------------
-# 6. Minimum and Maximum Temperature
-# -------------------------------
+# ==========================================
+# 8. MINIMUM AND MAXIMUM TEMPERATURE
+# ==========================================
 
-temp_by_year = df.groupby("year")[["min_temp", "max_temp"]].mean()
+temp_by_year = (
+    df.groupby("year")[
+        ["min_temp", "max_temp"]
+    ].mean()
+)
 
 plt.figure(figsize=(10, 5))
-plt.plot(temp_by_year.index, temp_by_year["min_temp"], marker="o", label="Minimum Temperature")
-plt.plot(temp_by_year.index, temp_by_year["max_temp"], marker="o", label="Maximum Temperature")
 
-plt.title("Minimum and Maximum Temperature Trend")
+plt.plot(
+    temp_by_year.index,
+    temp_by_year["min_temp"],
+    marker="o",
+    label="Minimum Temperature"
+)
+
+plt.plot(
+    temp_by_year.index,
+    temp_by_year["max_temp"],
+    marker="o",
+    label="Maximum Temperature"
+)
+
+plt.title(
+    "Minimum and Maximum Temperature Trend"
+)
+
 plt.xlabel("Year")
 plt.ylabel("Temperature")
+
 plt.legend()
 plt.tight_layout()
 plt.show()
 
-# -------------------------------
-# 7. Rainfall vs Average Temperature
-# -------------------------------
+# ==========================================
+# 9. RAINFALL VS AVERAGE TEMPERATURE
+# ==========================================
 
 plt.figure(figsize=(8, 5))
-plt.scatter(df["avg_temp"], df["rainfall"], alpha=0.5)
-plt.title("Rainfall vs Average Temperature")
+
+plt.scatter(
+    df["avg_temp"],
+    df["rainfall"],
+    alpha=0.5
+)
+
+plt.title(
+    "Rainfall vs Average Temperature"
+)
+
 plt.xlabel("Average Temperature")
 plt.ylabel("Rainfall")
+
 plt.tight_layout()
 plt.show()
 
-# -------------------------------
-# 8. Season-wise Rainfall
-# -------------------------------
+# ==========================================
+# 10. SEASON-WISE RAINFALL
+# ==========================================
 
-season_rainfall = df.groupby("season")["rainfall"].mean()
+season_rainfall = (
+    df.groupby("season")["rainfall"]
+    .mean()
+)
 
-print("\nSeason-wise Average Rainfall:")
+print("\n========== SEASON-WISE AVERAGE RAINFALL ==========")
 print(season_rainfall)
 
 plt.figure(figsize=(8, 5))
-season_rainfall.plot(kind="bar")
-plt.title("Season-wise Average Rainfall")
+
+season_rainfall.plot(
+    kind="bar"
+)
+
+plt.title(
+    "Season-wise Average Rainfall"
+)
+
 plt.xlabel("Season")
 plt.ylabel("Average Rainfall")
+
 plt.tight_layout()
 plt.show()
 
-print("\nWeather Pattern Analysis Completed Successfully!")
+# ==========================================
+# PROJECT COMPLETED
+# ==========================================
+
+print(
+    "\nWeather Pattern Analysis Completed Successfully!"
+)
+```
